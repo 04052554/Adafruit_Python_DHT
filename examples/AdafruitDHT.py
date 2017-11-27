@@ -19,9 +19,30 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import sys
-
 import Adafruit_DHT
+
+import time
+import sys
+import httplib, urllib
+import json
+deviceId = "DVpHlUin"
+deviceKey = "escuO2o0lthaDdJ0"
+def post_to_mcs(payload):
+        headers = {"Content-type": "application/json", "deviceKey": deviceKey}
+        not_connected = 1
+        while (not_connected):
+                try:
+                        conn = httplib.HTTPConnection("api.mediatek.com:80")
+                        conn.connect()
+                        not_connected = 0
+                except (httplib.HTTPException, socket.error) as ex:
+                        print "Error: %s"
+                         # sleep 10 seconds
+        conn.request("POST", "/mcs/v2/devices/" + deviceId + "/datapoints", json$
+        response = conn.getresponse()
+        print( response.status, response.reason, json.dumps(payload), time.strft$
+        data = response.read()
+        conn.close()
 
 
 # Parse command line parameters.
@@ -47,8 +68,17 @@ humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 # the results will be null (because Linux can't
 # guarantee the timing of calls to read the sensor).
 # If this happens try again!
-if humidity is not None and temperature is not None:
-    print('Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, humidity))
-else:
-    print('Failed to get reading. Try again!')
-    sys.exit(1)
+while True:
+        h0, t0= Adafruit_DHT.read_retry(11, 4)
+        humidity, temperature = Adafruit_DHT.read_retry(11, 4)
+        if humidity is not None and temperature is not None:
+                print('Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, h$
+                payload = {"datapoints":[{"dataChnId":"Humidity","values":{"valu$
+                        {"dataChnId":"Temperature","values":{"value":t0}}]}
+                post_to_mcs(payload)
+
+        else:
+                print('Failed to get reading. Try again!')
+                sys.exit(1)
+
+
